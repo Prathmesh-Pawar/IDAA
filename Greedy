@@ -1,0 +1,401 @@
+•	Activity Selection Problem : 
+Time Complexity : 
+1.	When List is not sorted : O(log(n))
+2.	When list is sorted : O(n)
+Input : Number of Activities and the starting and ending times
+Output : Selected Activities
+CODE : 
+#include <bits/stdc++.h>
+using namespace std;
+void printMaxActivities(int s[], int f[], int n){
+    int i, j;
+    cout<<"Following activities are selected : ";
+    i=0;
+    cout<<" "<<i;
+    for (j=1; j<n; j++){
+        if (s[j]>=f[i]){
+            cout<<" "<<j;
+            i=j;
+        }
+    }
+}
+int main(){
+    int n;
+    cout<<"Enter n : ";
+    cin>>n;
+    cout<<"Enter the start timimgs of activities : ";
+    int start[n];
+    for(int i=0; i<n; i++){
+        cin>>start[i];
+    }
+    cout<<"Enter the end timimgs of activities : ";
+    int end[n];
+    for(int i=0; i<n; i++){
+        cin>>end[i];
+    }
+    printMaxActivities(start, end, n);
+    return 0;
+}
+
+ 
+•	Job Sequencing : 
+Time Complexity : O(n2)
+Input : Number of job, job-id, deadline and profit of each job
+Output : Jobs giving maximum profit
+CODE : 
+#include <algorithm>
+#include <bits/stdc++.h>
+using namespace std;
+struct Job {
+    char id;
+    int dead;
+    int profit;
+};
+bool comparison(Job a, Job b){
+    return (a.profit > b.profit);
+}
+void printJobScheduling(Job arr[], int n){
+    sort(arr, arr + n, comparison);
+    bool slot[n];
+    int result[n];
+    for (int i = 0; i < n; i++)
+        slot[i] = false;
+    for(int i=0; i<n; i++) {
+        for(int j= min(n, arr[i].dead)-1; j>=0; j--) {
+            if(slot[j]==false){
+                result[j]=i;
+                slot[j]=true; 
+                break;
+            }
+        }
+    }
+    int sum=0;
+    for(int i=0; i<n; i++)
+        if(slot[i]){
+            cout<<arr[result[i]].id<<" ";
+            sum+=arr[result[i]].profit;
+        }
+        cout<<"The maximum profit is : "<<sum<<endl;
+}
+int main(){
+    int n;
+    cout<<"Enter the number of jobs : ";
+    cin>>n;
+    cout<<"Enter job-id, deadline and profit of each job : ";
+    Job arr[n];
+    for(int i=0; i<n; i++){
+        cin>>arr[i].id;
+        cin>>arr[i].dead;
+        cin>>arr[i].profit;
+    }
+    cout<<"Following is maximum profit sequence of jobs : "<<endl;
+    printJobScheduling(arr, n);
+    return 0;
+}
+ 
+
+ 
+
+•	Huffman Coding : 
+Time Complexity : O(nlog(n))
+Input : Message size and the message
+Output : Huffman code of the characters in the message
+CODE : 
+#include <bits/stdc++.h>
+using namespace std;
+struct MinHeapNode{
+    char data;
+    unsigned freq;
+    MinHeapNode *left, *right;
+    MinHeapNode(char data, unsigned freq){
+        left=right=NULL;
+        this->data=data;
+        this->freq=freq;
+    }
+};
+struct compare{
+    bool operator()(MinHeapNode* l, MinHeapNode* r){
+        return (l->freq > r->freq);
+    }
+};
+void printCodes(struct MinHeapNode* root, string str){
+    if(!root)
+        return;
+    if(root->data != '$')
+        cout<<root->data<<" : "<<str<<endl;
+    printCodes(root->left, str+"0");
+    printCodes(root->right, str+"1");
+}
+void HuffmanCodes(char data[], int freq[], int size){
+    struct MinHeapNode *left, *right, *top;
+    priority_queue<MinHeapNode*, vector<MinHeapNode*>, compare> minHeap;
+    for (int i=0; i<size; i++)
+        minHeap.push(new MinHeapNode(data[i], freq[i]));
+    while(minHeap.size()!=1){
+        left=minHeap.top();
+        minHeap.pop();
+        right=minHeap.top();
+        minHeap.pop();
+        top=new MinHeapNode('$', left->freq+right->freq);
+        top->left=left;
+        top->right=right;
+        minHeap.push(top);
+    }
+    printCodes(minHeap.top(), "");
+}
+int main(){
+    int size;
+    cout<<"Enter size : ";
+    cin>>size;
+    int frequency[size];
+    char arr[size];
+    cout<<"Enter the characters and their and frequency : ";
+    for(int i=0; i<size; i++){
+        cin>>arr[i];
+        cin>>frequency[i];
+    }
+    HuffmanCodes(arr, frequency, size);
+    return 0;
+}
+
+ 
+
+•	Kruskal’s Algorithm : 
+Time Complexity : O(Elog(V))
+Input : Graph nodes and edges with weights
+Output : Minimum spanning Tree
+CODE : 
+#include <bits/stdc++.h>
+using namespace std;
+class DSU {
+    int* parent;
+    int* rank;
+    public:
+        DSU(int n){
+            parent=new int[n];
+            rank = new int[n];
+            for(int i = 0; i < n; i++) {
+                parent[i] = -1;
+                rank[i] = 1;
+            }
+    }
+        int find(int i){
+            if (parent[i] == -1)
+                return i;
+            return parent[i] = find(parent[i]);
+        }
+        void unite(int x, int y){
+            int s1 = find(x);
+            int s2 = find(y);
+            if (s1 != s2) {
+                if (rank[s1] < rank[s2]) {
+                    parent[s1] = s2;
+                    rank[s2] += rank[s1];
+                }
+                else {
+                    parent[s2] = s1;
+                    rank[s1] += rank[s2];
+                }
+            }
+        }
+}; 
+class Graph {
+    vector<vector<int> > edgelist;
+    int V;
+ 
+    public:
+        Graph(int V) { 
+            this->V = V; 
+        }
+        void addEdge(int x, int y, int w){
+            edgelist.push_back({w, x, y});
+        }
+        void kruskals_mst(){
+            sort(edgelist.begin(), edgelist.end());
+            DSU s(V);
+            int ans = 0;
+            cout << "Following are the edges in the constructed MST"<<endl;
+            for(auto edge : edgelist) {
+                int w=edge[0];
+                int x=edge[1];
+                int y=edge[2];
+                if(s.find(x) != s.find(y)) {
+                    s.unite(x, y);
+                    ans+=w;
+                    cout<<x<<" -- "<<y<<" == "<<w<<endl;
+            }
+        }
+        cout<<"Minimum Cost Spanning Tree: "<<ans;
+    }
+};
+int main(){
+    int n, m;
+    cout<<"Enter the number of nodes and edges : ";
+    cin>>n>>m;
+    Graph g(n);
+    for (int i = 0; i < m; i++){
+        int x, y, w;
+        cin>>x>>y>>w;
+        g.addEdge(x, y, w);
+    }
+    g.kruskals_mst();
+    return 0;
+}
+
+ 
+•	Fractional Knapsack Problem : 
+Input : Profit and weights of each item and the weight of the kanapsack
+Output : Maximum profit
+Time Complexity : O(nlog(n))
+CODE : 
+#include <bits/stdc++.h>
+using namespace std;
+bool cmp(pair<int, int> a, pair<int, int> b){
+    double r1=(double)a.first/(double)a.second;
+    double r2=(double)b.first/(double)b.second;
+    return r1>r2;
+}
+int main(){
+    int W;
+    cout<<"Enter the capacity of the Knasack : ";
+    cin>>W;
+    cout<<"Enter the number of items : ";
+    int n;
+    cin>>n;
+    vector<pair<int, int>> vec(n);
+    pair<int, int> p1;
+    cout<<"Enter profit(value) and weight : ";
+    for(int i=0; i<n; i++){
+        cin>>vec[i].first>>vec[i].second;
+    }
+    sort(vec.begin(), vec.end(), cmp);
+    int ans=0;
+    for(int i=0; i<n; i++){
+        if(vec[i].second<=W) {
+            ans+=vec[i].first;
+            W-=vec[i].second;
+            continue;
+        }
+        else{
+            double tmp=(double)vec[i].first/(double)vec[i].second;
+            ans+=(tmp*W);
+            W=0;
+            break;
+        }
+    }
+    cout<<"Maximum first we can obtain : "<<ans;
+    return 0;
+}
+ 
+•	Dijkstra Algorithm : 
+Time Complexity : O(V+Elog(V))
+Input : Graph nodes and edges with weights
+Output : Minimum spanning Tree
+CODE : 
+#include <iostream>
+using namespace std;
+#include <limits.h>
+#define V 9
+int minDistance(int dist[], bool sptSet[]){
+    int min = INT_MAX, min_index;
+    for(int v = 0; v < V; v++)
+        if(sptSet[v] == false && dist[v] <= min){
+            min=dist[v];
+            min_index = v;
+        }
+    return min_index;
+}
+void printSolution(int dist[]){
+    cout<<"Vertex \t Distance from Source"<<endl;
+    for(int i=0; i<V; i++)
+        cout<<i<<" \t\t"<<dist[i]<< endl;
+}
+void dijkstra(int graph[V][V], int src){
+    int dist[V];
+    bool sptSet[V];
+    for (int i = 0; i < V; i++)
+        dist[i] = INT_MAX, sptSet[i] = false;
+    dist[src] = 0;
+    for (int count = 0; count < V - 1; count++) {
+        int u = minDistance(dist, sptSet);
+        sptSet[u] = true;
+        for(int v = 0; v < V; v++)
+            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
+    }
+    printSolution(dist);
+}
+int main(){
+    int graph[V][V];
+    cout<<"Enter elements : ";
+    for(int i=0; i<V; i++){
+        for(int j=0; j<V; j++){
+            cin>>graph[i][j];
+        }
+    }
+ 
+    dijkstra(graph, 0);
+ 
+    return 0;
+}
+
+ 
+
+•	Prims Algorithm : 
+Time Complexity : O((V+E)log(V)) 
+Input : Adjacency List representation of graph
+Output : Edges in Minimum spanning tree
+CODE : 
+#include<bits/stdc++.h>
+using namespace std;
+# define INF 0x3f3f3f3f
+typedef pair<int, int> iPair;
+void addEdge(vector <pair<int, int> > adj[], int u, int v, int wt){
+    adj[u].push_back(make_pair(v, wt));
+    adj[v].push_back(make_pair(u, wt));
+}
+void primMST(vector<pair<int,int> > adj[], int V){
+    priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
+    int src = 0;
+    vector<int> key(V, INF);
+    vector<int> parent(V, -1);
+    vector<bool> inMST(V, false);
+    pq.push(make_pair(0, src));
+    key[src]=0;
+    while(!pq.empty()){
+        int u = pq.top().second;
+        pq.pop();
+        if(inMST[u] == true){
+            continue;
+        }
+        inMST[u] = true;
+        for (auto x : adj[u]){
+            int v = x.first;
+            int weight = x.second;
+            if (inMST[v] == false && key[v] > weight){
+                key[v] = weight;
+                pq.push(make_pair(key[v], v));
+                parent[v] = u;
+            }
+        }
+    }
+    for (int i = 1; i < V; ++i)
+        printf("%d - %d\n", parent[i], i);
+}
+int main(){
+    int V, e;
+    cout<<"Enter the number of nodes and edges: ";
+    cin>>V>>e;
+    vector<iPair > adj[V];
+    for(int i=0; i<e; i++){
+        int x, y, z;
+        cin>>x>>y>>z;
+        addEdge(adj, x, y, z);
+    }
+    primMST(adj, V);
+    return 0;
+}
+
+
+ 
+
