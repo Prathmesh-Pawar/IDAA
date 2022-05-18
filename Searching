@@ -1,0 +1,71 @@
+•	Linear Search : 
+Input : Size of array and array elements.
+Output : Index where the key element is present
+Time Complexity : O(n)
+CODE : 
+#include <iostream>
+using namespace std; 
+int search(int arr[], int n, int x){
+    int i;
+    for(i=0; i<n; i++)
+        if(arr[i]==x)
+            return i;
+    return -1;
+}
+ 
+int main(){
+    int n;
+    cout<<"Enter the no. of elements : ";
+    cin>>n;
+    int arr[n];
+    cout<<"Enter elements : ";
+    for(int i=0; i<n; i++)
+        cin>>arr[i];
+    cout<<"Enter the element to be searched : ";
+    int x;
+    cin>>x;
+    int result = search(arr, n, x);
+    (result == -1)?cout<<"Element is not present in array":cout<<"Element is present at index : "<<result;
+    return 0;
+}
+
+
+ 
+
+
+
+
+•	Binary Search : 
+Time Complexity : O(logn)   Space Complexity : O(1)
+Input : Size of array and the array elements
+Output : Index of the key element in sorted array
+CODE : 
+#include<bits/stdc++.h>
+using namespace std;
+int binarySearch(int arr[], int low, int high, int key){
+    if(low<=high){
+        int mid=(low+high)/2;
+        if(arr[mid]==key)
+            return mid;
+        else if(arr[mid]<key)
+            return binarySearch(arr, mid+1, high, key);
+        else 
+            return binarySearch(arr, low, mid-1, key);
+    }
+    
+    return -1;
+}
+int main(){
+    int n, k;
+    cout<<"Enter size : ";
+    cin>>n;
+    int arr[n];
+    cout<<"Enter Elements : ";
+    for(int i=0; i<n; i++)
+        cin>>arr[i];
+    cout<<"Enter the key : ";
+    cin>>k;
+    sort(arr,arr+n);
+    cout<<binarySearch(arr, 0, n-1, k)<<endl;
+	return 0;
+}
